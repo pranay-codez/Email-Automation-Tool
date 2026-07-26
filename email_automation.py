@@ -6,10 +6,13 @@ from pathlib import Path
 
 class Email_Automation:
     # taking in the credentials
-    def __init__(self,receiver_mail):
-        self.senders_mail = "menonpranay54@gmail.com"
-        self.receiver_mail = receiver_mail
+    def __init__(self, sender_email ):
+        self.senders_mail = sender_email
+        self.receiver_mail = []
         self.password = getpass.getpass("Enter your password: ")
+
+    def add_recipients(self, recipients):
+        self.receiver_mail = recipients.copy()
     # definig message structure
     def message_body(self,subject):
         self.msg = EmailMessage()
@@ -57,26 +60,41 @@ class Email_Automation:
                 server.login(self.senders_mail , self.password)
                 server.send_message(self.msg)
                 print("Email sent successfully!")
+                server.close()
         except smtplib.SMTPAuthenticationError:
             print("authentication failed check your mail and app password")
         except Exception as e:
             print(f"{e}")
 
+
         
 
 
 def main():
-    receiver_email = input("Enter the receiver mail address: ").lower()
-    email = Email_Automation(receiver_email)
     while True:
         print("select from the given options!")
-        print("1 send an email\n2 send email to multiple recipients\n3 Exit")
+        print("1 send an email\n2 Exit")
         try:
-            choice = int(input("Enter the option(1,2 or 3): "))
+            choice = int(input("Enter the option(1 or 2): "))
         except ValueError:
             print("Enter the correct type of choice")
 
         if choice == 1:
+            recipients = []
+            sender_mail = input("Enter the sender's mail_id: ")
+            email = Email_Automation(sender_mail)
+            print("How many recipients do you want to add: ")
+            try:
+                num = int(input("Enter: "))
+                if num ==0 or num<0:
+                    raise ValueError
+                for i in range(num):
+                    mail_id = input("Enter the mail id: ")
+                    recipients.append(mail_id)
+                email.add_recipients(recipients)
+            except ValueError:
+                print("Entered wrong type value or 0 or < 0")
+                continue
             subject = input("Enter the subject for you mail: ")
             text_content = input("Enter the text: ")
             email.message_body(subject)
@@ -84,20 +102,18 @@ def main():
             print("Enter Y if you want to add an attachment N for not wanting it ..")
             option = input("Enter your option: ").upper()
             if option == "Y":
-                file_name = input("enter the file name: ")
+                file_name = input("enter the file(if it didnt worked paste the whole path) name: ")
                 email.add_attachment(file_name)
             elif option == "N":
                 print("OK understood")
             else: 
                 print("Please enter the correct option next time")
-                break
+                continue
             email.smtp_connection()
 
 
         elif choice == 2:
-            pass
-
-        elif choice == 3:
+            print("Exiting!!!")
             break
 
         else:
