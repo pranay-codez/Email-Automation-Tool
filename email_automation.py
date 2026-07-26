@@ -4,7 +4,7 @@ import mimetypes
 from email.message import EmailMessage
 from pathlib import Path
 
-class Email_Automation:
+class EmailAutomation:
     # taking in the credentials
     def __init__(self, sender_email ):
         self.senders_mail = sender_email
@@ -18,7 +18,7 @@ class Email_Automation:
         self.msg = EmailMessage()
         self.msg["Subject"] = subject
         self.msg["From"] = self.senders_mail
-        self.msg["To"] = self.receiver_mail
+        self.msg["To"] = ", ".join(self.receiver_mail)
 
     def plain_text(self,text):
         self.msg.set_content(text)
@@ -60,7 +60,7 @@ class Email_Automation:
                 server.login(self.senders_mail , self.password)
                 server.send_message(self.msg)
                 print("Email sent successfully!")
-                server.close()
+                
         except smtplib.SMTPAuthenticationError:
             print("authentication failed check your mail and app password")
         except Exception as e:
@@ -82,7 +82,7 @@ def main():
         if choice == 1:
             recipients = []
             sender_mail = input("Enter the sender's mail_id: ")
-            email = Email_Automation(sender_mail)
+            email = EmailAutomation(sender_mail)
             print("How many recipients do you want to add: ")
             try:
                 num = int(input("Enter: "))
